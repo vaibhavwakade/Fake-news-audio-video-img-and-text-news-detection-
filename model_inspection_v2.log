@@ -1,0 +1,267 @@
+/Users/abhijeetgolhar/Downloads/P Project/venv/lib/python3.13/site-packages/keras/src/export/tf2onnx_lib.py:8: FutureWarning: In the future `np.object` will be defined as the corresponding NumPy scalar.
+  if not hasattr(np, "object"):
+
+--- Inspecting /Users/abhijeetgolhar/Downloads/P Project/Dataset/image_train_model.h5 ---
+Model Name: AudioClassifier
+Model: "AudioClassifier"
+┏━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━┳
+┃ Layer (type)        ┃ Output Shape      ┃    Param # ┃
+┡━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━╇
+│ mel_spectrogram     │ (None, 128, 63,   │          0 │
+│ (InputLayer)        │ 1)                │            │
+├─────────────────────┼───────────────────┼────────────┼
+│ conv2d (Conv2D)     │ (None, 64, 32,    │      3,136 │
+│                     │ 64)               │            │
+├─────────────────────┼───────────────────┼────────────┼
+│ batch_normalization │ (None, 64, 32,    │        256 │
+│ (BatchNormalizatio… │ 64)               │            │
+├─────────────────────┼───────────────────┼────────────┼
+│ re_lu (ReLU)        │ (None, 64, 32,    │          0 │
+│                     │ 64)               │            │
+├─────────────────────┼───────────────────┼────────────┼
+│ max_pooling2d       │ (None, 32, 16,    │          0 │
+│ (MaxPooling2D)      │ 64)               │            │
+├─────────────────────┼───────────────────┼────────────┼
+│ conv2d_1 (Conv2D)   │ (None, 32, 16,    │     36,864 │
+│                     │ 64)               │            │
+├─────────────────────┼───────────────────┼────────────┼
+│ batch_normalizatio… │ (None, 32, 16,    │        256 │
+│ (BatchNormalizatio… │ 64)               │            │
+├─────────────────────┼───────────────────┼────────────┼
+│ re_lu_1 (ReLU)      │ (None, 32, 16,    │          0 │
+│                     │ 64)               │            │
+├─────────────────────┼───────────────────┼────────────┼
+│ conv2d_2 (Conv2D)   │ (None, 32, 16,    │     36,864 │
+│                     │ 64)               │            │
+├─────────────────────┼───────────────────┼────────────┼
+│ batch_normalizatio… │ (None, 32, 16,    │        256 │
+│ (BatchNormalizatio… │ 64)               │            │
+├─────────────────────┼───────────────────┼────────────┼
+│ add (Add)           │ (None, 32, 16,    │          0 │
+│                     │ 64)               │            │
+├─────────────────────┼───────────────────┼────────────┼
+│ re_lu_2 (ReLU)      │ (None, 32, 16,    │          0 │
+│                     │ 64)               │            │
+├─────────────────────┼───────────────────┼────────────┼
+│ conv2d_3 (Conv2D)   │ (None, 32, 16,    │     36,864 │
+│                     │ 64)               │            │
+├─────────────────────┼───────────────────┼────────────┼
+│ batch_normalizatio… │ (None, 32, 16,    │        256 │
+│ (BatchNormalizatio… │ 64)               │            │
+├─────────────────────┼───────────────────┼────────────┼
+│ re_lu_3 (ReLU)      │ (None, 32, 16,    │          0 │
+│                     │ 64)               │            │
+├─────────────────────┼───────────────────┼────────────┼
+│ conv2d_4 (Conv2D)   │ (None, 32, 16,    │     36,864 │
+│                     │ 64)               │            │
+├─────────────────────┼───────────────────┼────────────┼
+│ batch_normalizatio… │ (None, 32, 16,    │        256 │
+│ (BatchNormalizatio… │ 64)               │            │
+├─────────────────────┼───────────────────┼────────────┼
+│ add_1 (Add)         │ (None, 32, 16,    │          0 │
+│                     │ 64)               │            │
+├─────────────────────┼───────────────────┼────────────┼
+│ re_lu_4 (ReLU)      │ (None, 32, 16,    │          0 │
+│                     │ 64)               │            │
+├─────────────────────┼───────────────────┼────────────┼
+│ conv2d_5 (Conv2D)   │ (None, 16, 8,     │     73,728 │
+│                     │ 128)              │            │
+├─────────────────────┼───────────────────┼────────────┼
+│ batch_normalizatio… │ (None, 16, 8,     │        512 │
+│ (BatchNormalizatio… │ 128)              │            │
+├─────────────────────┼───────────────────┼────────────┼
+│ re_lu_5 (ReLU)      │ (None, 16, 8,     │          0 │
+│                     │ 128)              │            │
+├─────────────────────┼───────────────────┼────────────┼
+│ conv2d_6 (Conv2D)   │ (None, 16, 8,     │    147,456 │
+│                     │ 128)              │            │
+├─────────────────────┼───────────────────┼────────────┼
+│ conv2d_7 (Conv2D)   │ (None, 16, 8,     │      8,192 │
+│                     │ 128)              │            │
+├─────────────────────┼───────────────────┼────────────┼
+│ batch_normalizatio… │ (None, 16, 8,     │        512 │
+│ (BatchNormalizatio… │ 128)              │            │
+├─────────────────────┼───────────────────┼────────────┼
+│ batch_normalizatio… │ (None, 16, 8,     │        512 │
+│ (BatchNormalizatio… │ 128)              │            │
+├─────────────────────┼───────────────────┼────────────┼
+│ add_2 (Add)         │ (None, 16, 8,     │          0 │
+│                     │ 128)              │            │
+├─────────────────────┼───────────────────┼────────────┼
+│ re_lu_6 (ReLU)      │ (None, 16, 8,     │          0 │
+│                     │ 128)              │            │
+├─────────────────────┼───────────────────┼────────────┼
+│ conv2d_8 (Conv2D)   │ (None, 16, 8,     │    147,456 │
+│                     │ 128)              │            │
+├─────────────────────┼───────────────────┼────────────┼
+│ batch_normalizatio… │ (None, 16, 8,     │        512 │
+│ (BatchNormalizatio… │ 128)              │            │
+├─────────────────────┼───────────────────┼────────────┼
+│ re_lu_7 (ReLU)      │ (None, 16, 8,     │          0 │
+│                     │ 128)              │            │
+├─────────────────────┼───────────────────┼────────────┼
+│ conv2d_9 (Conv2D)   │ (None, 16, 8,     │    147,456 │
+│                     │ 128)              │            │
+├─────────────────────┼───────────────────┼────────────┼
+│ batch_normalizatio… │ (None, 16, 8,     │        512 │
+│ (BatchNormalizatio… │ 128)              │            │
+├─────────────────────┼───────────────────┼────────────┼
+│ add_3 (Add)         │ (None, 16, 8,     │          0 │
+│                     │ 128)              │            │
+├─────────────────────┼───────────────────┼────────────┼
+│ re_lu_8 (ReLU)      │ (None, 16, 8,     │          0 │
+│                     │ 128)              │            │
+├─────────────────────┼───────────────────┼────────────┼
+│ conv2d_10 (Conv2D)  │ (None, 8, 4, 256) │    294,912 │
+├─────────────────────┼───────────────────┼────────────┼
+│ batch_normalizatio… │ (None, 8, 4, 256) │      1,024 │
+│ (BatchNormalizatio… │                   │            │
+├─────────────────────┼───────────────────┼────────────┼
+│ re_lu_9 (ReLU)      │ (None, 8, 4, 256) │          0 │
+├─────────────────────┼───────────────────┼────────────┼
+│ conv2d_11 (Conv2D)  │ (None, 8, 4, 256) │    589,824 │
+├─────────────────────┼───────────────────┼────────────┼
+│ conv2d_12 (Conv2D)  │ (None, 8, 4, 256) │     32,768 │
+├─────────────────────┼───────────────────┼────────────┼
+│ batch_normalizatio… │ (None, 8, 4, 256) │      1,024 │
+│ (BatchNormalizatio… │                   │            │
+├─────────────────────┼───────────────────┼────────────┼
+│ batch_normalizatio… │ (None, 8, 4, 256) │      1,024 │
+│ (BatchNormalizatio… │                   │            │
+├─────────────────────┼───────────────────┼────────────┼
+│ add_4 (Add)         │ (None, 8, 4, 256) │          0 │
+│                     │                   │            │
+├─────────────────────┼───────────────────┼────────────┼
+│ re_lu_10 (ReLU)     │ (None, 8, 4, 256) │          0 │
+├─────────────────────┼───────────────────┼────────────┼
+│ conv2d_13 (Conv2D)  │ (None, 8, 4, 256) │    589,824 │
+├─────────────────────┼───────────────────┼────────────┼
+│ batch_normalizatio… │ (None, 8, 4, 256) │      1,024 │
+│ (BatchNormalizatio… │                   │            │
+├─────────────────────┼───────────────────┼────────────┼
+│ re_lu_11 (ReLU)     │ (None, 8, 4, 256) │          0 │
+├─────────────────────┼───────────────────┼────────────┼
+│ conv2d_14 (Conv2D)  │ (None, 8, 4, 256) │    589,824 │
+├─────────────────────┼───────────────────┼────────────┼
+│ batch_normalizatio… │ (None, 8, 4, 256) │      1,024 │
+│ (BatchNormalizatio… │                   │            │
+├─────────────────────┼───────────────────┼────────────┼
+│ add_5 (Add)         │ (None, 8, 4, 256) │          0 │
+│                     │                   │            │
+├─────────────────────┼───────────────────┼────────────┼
+│ re_lu_12 (ReLU)     │ (None, 8, 4, 256) │          0 │
+├─────────────────────┼───────────────────┼────────────┼
+│ conv2d_15 (Conv2D)  │ (None, 4, 2, 512) │  1,179,648 │
+├─────────────────────┼───────────────────┼────────────┼
+│ batch_normalizatio… │ (None, 4, 2, 512) │      2,048 │
+│ (BatchNormalizatio… │                   │            │
+├─────────────────────┼───────────────────┼────────────┼
+│ re_lu_13 (ReLU)     │ (None, 4, 2, 512) │          0 │
+├─────────────────────┼───────────────────┼────────────┼
+│ conv2d_16 (Conv2D)  │ (None, 4, 2, 512) │  2,359,296 │
+├─────────────────────┼───────────────────┼────────────┼
+│ conv2d_17 (Conv2D)  │ (None, 4, 2, 512) │    131,072 │
+├─────────────────────┼───────────────────┼────────────┼
+│ batch_normalizatio… │ (None, 4, 2, 512) │      2,048 │
+│ (BatchNormalizatio… │                   │            │
+├─────────────────────┼───────────────────┼────────────┼
+│ batch_normalizatio… │ (None, 4, 2, 512) │      2,048 │
+│ (BatchNormalizatio… │                   │            │
+├─────────────────────┼───────────────────┼────────────┼
+│ add_6 (Add)         │ (None, 4, 2, 512) │          0 │
+│                     │                   │            │
+├─────────────────────┼───────────────────┼────────────┼
+│ re_lu_14 (ReLU)     │ (None, 4, 2, 512) │          0 │
+├─────────────────────┼───────────────────┼────────────┼
+│ conv2d_18 (Conv2D)  │ (None, 4, 2, 512) │  2,359,296 │
+├─────────────────────┼───────────────────┼────────────┼
+│ batch_normalizatio… │ (None, 4, 2, 512) │      2,048 │
+│ (BatchNormalizatio… │                   │            │
+├─────────────────────┼───────────────────┼────────────┼
+│ re_lu_15 (ReLU)     │ (None, 4, 2, 512) │          0 │
+├─────────────────────┼───────────────────┼────────────┼
+│ conv2d_19 (Conv2D)  │ (None, 4, 2, 512) │  2,359,296 │
+├─────────────────────┼───────────────────┼────────────┼
+│ batch_normalizatio… │ (None, 4, 2, 512) │      2,048 │
+│ (BatchNormalizatio… │                   │            │
+├─────────────────────┼───────────────────┼────────────┼
+│ add_7 (Add)         │ (None, 4, 2, 512) │          0 │
+│                     │                   │            │
+├─────────────────────┼───────────────────┼────────────┼
+│ re_lu_16 (ReLU)     │ (None, 4, 2, 512) │          0 │
+├─────────────────────┼───────────────────┼────────────┼
+│ global_average_poo… │ (None, 512)       │          0 │
+│ (GlobalAveragePool… │                   │            │
+├─────────────────────┼───────────────────┼────────────┼
+│ prediction (Dense)  │ (None, 2)         │      1,026 │
+└─────────────────────┴───────────────────┴────────────┴
+ Total params: 11,180,866 (42.65 MB)
+ Trainable params: 11,171,266 (42.61 MB)
+ Non-trainable params: 9,600 (37.50 KB)
+Input shape: (None, 128, 63, 1)
+Layer 0: mel_spectrogram, Type: <class 'keras.src.layers.core.input_layer.InputLayer'>, Config: N/A
+Layer 1: conv2d, Type: <class 'keras.src.layers.convolutional.conv2d.Conv2D'>, Config: linear
+Layer 2: batch_normalization, Type: <class 'keras.src.layers.normalization.batch_normalization.BatchNormalization'>, Config: N/A
+Layer 3: re_lu, Type: <class 'keras.src.layers.activations.relu.ReLU'>, Config: N/A
+Layer 4: max_pooling2d, Type: <class 'keras.src.layers.pooling.max_pooling2d.MaxPooling2D'>, Config: N/A
+Layer 65: add_7, Type: <class 'keras.src.layers.merging.add.Add'>, Config: N/A
+Layer 66: re_lu_16, Type: <class 'keras.src.layers.activations.relu.ReLU'>, Config: N/A
+Layer 67: global_average_pooling2d, Type: <class 'keras.src.layers.pooling.global_average_pooling2d.GlobalAveragePooling2D'>, Config: N/A
+Layer 68: prediction, Type: <class 'keras.src.layers.core.dense.Dense'>, Config: linear
+
+--- Inspecting /Users/abhijeetgolhar/Downloads/P Project/Dataset/audio_train_model.h5 ---
+Model Name: model
+Model: "model"
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━
+┃ Layer (type)                    ┃ Output Shape        
+┡━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━
+│ input_1 (InputLayer)            │ (None, 128, 109, 1) 
+├─────────────────────────────────┼─────────────────────
+│ conv2d (Conv2D)                 │ (None, 126, 107, 32)
+├─────────────────────────────────┼─────────────────────
+│ max_pooling2d (MaxPooling2D)    │ (None, 63, 53, 32)  
+├─────────────────────────────────┼─────────────────────
+│ conv2d_1 (Conv2D)               │ (None, 61, 51, 64)  
+├─────────────────────────────────┼─────────────────────
+│ max_pooling2d_1 (MaxPooling2D)  │ (None, 30, 25, 64)  
+├─────────────────────────────────┼─────────────────────
+│ flatten (Flatten)               │ (None, 48000)       
+├─────────────────────────────────┼─────────────────────
+│ dense (Dense)                   │ (None, 128)         
+├─────────────────────────────────┼─────────────────────
+│ dropout (Dropout)               │ (None, 128)         
+├─────────────────────────────────┼─────────────────────
+│ dense_1 (Dense)                 │ (None, 2)           
+└─────────────────────────────────┴─────────────────────
+ Total params: 6,163,202 (23.51 MB)
+ Trainable params: 6,163,202 (23.51 MB)
+ Non-trainable params: 0 (0.00 B)
+Input shape: (None, 128, 109, 1)
+Layer 0: input_1, Type: <class 'keras.src.layers.core.input_layer.InputLayer'>, Config: N/A
+Layer 1: conv2d, Type: <class 'keras.src.layers.convolutional.conv2d.Conv2D'>, Config: relu
+Layer 2: max_pooling2d, Type: <class 'keras.src.layers.pooling.max_pooling2d.MaxPooling2D'>, Config: N/A
+Layer 3: conv2d_1, Type: <class 'keras.src.layers.convolutional.conv2d.Conv2D'>, Config: relu
+Layer 4: max_pooling2d_1, Type: <class 'keras.src.layers.pooling.max_pooling2d.MaxPooling2D'>, Config: N/A
+Layer 5: flatten, Type: <class 'keras.src.layers.reshaping.flatten.Flatten'>, Config: N/A
+Layer 6: dense, Type: <class 'keras.src.layers.core.dense.Dense'>, Config: relu
+Layer 7: dropout, Type: <class 'keras.src.layers.regularization.dropout.Dropout'>, Config: N/A
+Layer 8: dense_1, Type: <class 'keras.src.layers.core.dense.Dense'>, Config: softmax
+
+--- Inspecting /Users/abhijeetgolhar/Downloads/P Project/Dataset/video_train_model.pth ---
+Data type: <class 'collections.OrderedDict'>
+Keys: odict_keys(['model.conv1.weight', 'model.bn1.weight', 'model.bn1.bias', 'model.bn1.running_mean', 'model.bn1.running_var', 'model.bn1.num_batches_tracked', 'model.conv2.weight', 'model.bn2.weight', 'model.bn2.bias', 'model.bn2.running_mean', 'model.bn2.running_var', 'model.bn2.num_batches_tracked', 'model.block1.skip.weight', 'model.block1.skipbn.weight', 'model.block1.skipbn.bias', 'model.block1.skipbn.running_mean', 'model.block1.skipbn.running_var', 'model.block1.skipbn.num_batches_tracked', 'model.block1.rep.0.conv1.weight', 'model.block1.rep.0.pointwise.weight', 'model.block1.rep.1.weight', 'model.block1.rep.1.bias', 'model.block1.rep.1.running_mean', 'model.block1.rep.1.running_var', 'model.block1.rep.1.num_batches_tracked', 'model.block1.rep.3.conv1.weight', 'model.block1.rep.3.pointwise.weight', 'model.block1.rep.4.weight', 'model.block1.rep.4.bias', 'model.block1.rep.4.running_mean', 'model.block1.rep.4.running_var', 'model.block1.rep.4.num_batches_tracked', 'model.block2.skip.weight', 'model.block2.skipbn.weight', 'model.block2.skipbn.bias', 'model.block2.skipbn.running_mean', 'model.block2.skipbn.running_var', 'model.block2.skipbn.num_batches_tracked', 'model.block2.rep.1.conv1.weight', 'model.block2.rep.1.pointwise.weight', 'model.block2.rep.2.weight', 'model.block2.rep.2.bias', 'model.block2.rep.2.running_mean', 'model.block2.rep.2.running_var', 'model.block2.rep.2.num_batches_tracked', 'model.block2.rep.4.conv1.weight', 'model.block2.rep.4.pointwise.weight', 'model.block2.rep.5.weight', 'model.block2.rep.5.bias', 'model.block2.rep.5.running_mean', 'model.block2.rep.5.running_var', 'model.block2.rep.5.num_batches_tracked', 'model.block3.skip.weight', 'model.block3.skipbn.weight', 'model.block3.skipbn.bias', 'model.block3.skipbn.running_mean', 'model.block3.skipbn.running_var', 'model.block3.skipbn.num_batches_tracked', 'model.block3.rep.1.conv1.weight', 'model.block3.rep.1.pointwise.weight', 'model.block3.rep.2.weight', 'model.block3.rep.2.bias', 'model.block3.rep.2.running_mean', 'model.block3.rep.2.running_var', 'model.block3.rep.2.num_batches_tracked', 'model.block3.rep.4.conv1.weight', 'model.block3.rep.4.pointwise.weight', 'model.block3.rep.5.weight', 'model.block3.rep.5.bias', 'model.block3.rep.5.running_mean', 'model.block3.rep.5.running_var', 'model.block3.rep.5.num_batches_tracked', 'model.block4.rep.1.conv1.weight', 'model.block4.rep.1.pointwise.weight', 'model.block4.rep.2.weight', 'model.block4.rep.2.bias', 'model.block4.rep.2.running_mean', 'model.block4.rep.2.running_var', 'model.block4.rep.2.num_batches_tracked', 'model.block4.rep.4.conv1.weight', 'model.block4.rep.4.pointwise.weight', 'model.block4.rep.5.weight', 'model.block4.rep.5.bias', 'model.block4.rep.5.running_mean', 'model.block4.rep.5.running_var', 'model.block4.rep.5.num_batches_tracked', 'model.block4.rep.7.conv1.weight', 'model.block4.rep.7.pointwise.weight', 'model.block4.rep.8.weight', 'model.block4.rep.8.bias', 'model.block4.rep.8.running_mean', 'model.block4.rep.8.running_var', 'model.block4.rep.8.num_batches_tracked', 'model.block5.rep.1.conv1.weight', 'model.block5.rep.1.pointwise.weight', 'model.block5.rep.2.weight', 'model.block5.rep.2.bias', 'model.block5.rep.2.running_mean', 'model.block5.rep.2.running_var', 'model.block5.rep.2.num_batches_tracked', 'model.block5.rep.4.conv1.weight', 'model.block5.rep.4.pointwise.weight', 'model.block5.rep.5.weight', 'model.block5.rep.5.bias', 'model.block5.rep.5.running_mean', 'model.block5.rep.5.running_var', 'model.block5.rep.5.num_batches_tracked', 'model.block5.rep.7.conv1.weight', 'model.block5.rep.7.pointwise.weight', 'model.block5.rep.8.weight', 'model.block5.rep.8.bias', 'model.block5.rep.8.running_mean', 'model.block5.rep.8.running_var', 'model.block5.rep.8.num_batches_tracked', 'model.block6.rep.1.conv1.weight', 'model.block6.rep.1.pointwise.weight', 'model.block6.rep.2.weight', 'model.block6.rep.2.bias', 'model.block6.rep.2.running_mean', 'model.block6.rep.2.running_var', 'model.block6.rep.2.num_batches_tracked', 'model.block6.rep.4.conv1.weight', 'model.block6.rep.4.pointwise.weight', 'model.block6.rep.5.weight', 'model.block6.rep.5.bias', 'model.block6.rep.5.running_mean', 'model.block6.rep.5.running_var', 'model.block6.rep.5.num_batches_tracked', 'model.block6.rep.7.conv1.weight', 'model.block6.rep.7.pointwise.weight', 'model.block6.rep.8.weight', 'model.block6.rep.8.bias', 'model.block6.rep.8.running_mean', 'model.block6.rep.8.running_var', 'model.block6.rep.8.num_batches_tracked', 'model.block7.rep.1.conv1.weight', 'model.block7.rep.1.pointwise.weight', 'model.block7.rep.2.weight', 'model.block7.rep.2.bias', 'model.block7.rep.2.running_mean', 'model.block7.rep.2.running_var', 'model.block7.rep.2.num_batches_tracked', 'model.block7.rep.4.conv1.weight', 'model.block7.rep.4.pointwise.weight', 'model.block7.rep.5.weight', 'model.block7.rep.5.bias', 'model.block7.rep.5.running_mean', 'model.block7.rep.5.running_var', 'model.block7.rep.5.num_batches_tracked', 'model.block7.rep.7.conv1.weight', 'model.block7.rep.7.pointwise.weight', 'model.block7.rep.8.weight', 'model.block7.rep.8.bias', 'model.block7.rep.8.running_mean', 'model.block7.rep.8.running_var', 'model.block7.rep.8.num_batches_tracked', 'model.block8.rep.1.conv1.weight', 'model.block8.rep.1.pointwise.weight', 'model.block8.rep.2.weight', 'model.block8.rep.2.bias', 'model.block8.rep.2.running_mean', 'model.block8.rep.2.running_var', 'model.block8.rep.2.num_batches_tracked', 'model.block8.rep.4.conv1.weight', 'model.block8.rep.4.pointwise.weight', 'model.block8.rep.5.weight', 'model.block8.rep.5.bias', 'model.block8.rep.5.running_mean', 'model.block8.rep.5.running_var', 'model.block8.rep.5.num_batches_tracked', 'model.block8.rep.7.conv1.weight', 'model.block8.rep.7.pointwise.weight', 'model.block8.rep.8.weight', 'model.block8.rep.8.bias', 'model.block8.rep.8.running_mean', 'model.block8.rep.8.running_var', 'model.block8.rep.8.num_batches_tracked', 'model.block9.rep.1.conv1.weight', 'model.block9.rep.1.pointwise.weight', 'model.block9.rep.2.weight', 'model.block9.rep.2.bias', 'model.block9.rep.2.running_mean', 'model.block9.rep.2.running_var', 'model.block9.rep.2.num_batches_tracked', 'model.block9.rep.4.conv1.weight', 'model.block9.rep.4.pointwise.weight', 'model.block9.rep.5.weight', 'model.block9.rep.5.bias', 'model.block9.rep.5.running_mean', 'model.block9.rep.5.running_var', 'model.block9.rep.5.num_batches_tracked', 'model.block9.rep.7.conv1.weight', 'model.block9.rep.7.pointwise.weight', 'model.block9.rep.8.weight', 'model.block9.rep.8.bias', 'model.block9.rep.8.running_mean', 'model.block9.rep.8.running_var', 'model.block9.rep.8.num_batches_tracked', 'model.block10.rep.1.conv1.weight', 'model.block10.rep.1.pointwise.weight', 'model.block10.rep.2.weight', 'model.block10.rep.2.bias', 'model.block10.rep.2.running_mean', 'model.block10.rep.2.running_var', 'model.block10.rep.2.num_batches_tracked', 'model.block10.rep.4.conv1.weight', 'model.block10.rep.4.pointwise.weight', 'model.block10.rep.5.weight', 'model.block10.rep.5.bias', 'model.block10.rep.5.running_mean', 'model.block10.rep.5.running_var', 'model.block10.rep.5.num_batches_tracked', 'model.block10.rep.7.conv1.weight', 'model.block10.rep.7.pointwise.weight', 'model.block10.rep.8.weight', 'model.block10.rep.8.bias', 'model.block10.rep.8.running_mean', 'model.block10.rep.8.running_var', 'model.block10.rep.8.num_batches_tracked', 'model.block11.rep.1.conv1.weight', 'model.block11.rep.1.pointwise.weight', 'model.block11.rep.2.weight', 'model.block11.rep.2.bias', 'model.block11.rep.2.running_mean', 'model.block11.rep.2.running_var', 'model.block11.rep.2.num_batches_tracked', 'model.block11.rep.4.conv1.weight', 'model.block11.rep.4.pointwise.weight', 'model.block11.rep.5.weight', 'model.block11.rep.5.bias', 'model.block11.rep.5.running_mean', 'model.block11.rep.5.running_var', 'model.block11.rep.5.num_batches_tracked', 'model.block11.rep.7.conv1.weight', 'model.block11.rep.7.pointwise.weight', 'model.block11.rep.8.weight', 'model.block11.rep.8.bias', 'model.block11.rep.8.running_mean', 'model.block11.rep.8.running_var', 'model.block11.rep.8.num_batches_tracked', 'model.block12.skip.weight', 'model.block12.skipbn.weight', 'model.block12.skipbn.bias', 'model.block12.skipbn.running_mean', 'model.block12.skipbn.running_var', 'model.block12.skipbn.num_batches_tracked', 'model.block12.rep.1.conv1.weight', 'model.block12.rep.1.pointwise.weight', 'model.block12.rep.2.weight', 'model.block12.rep.2.bias', 'model.block12.rep.2.running_mean', 'model.block12.rep.2.running_var', 'model.block12.rep.2.num_batches_tracked', 'model.block12.rep.4.conv1.weight', 'model.block12.rep.4.pointwise.weight', 'model.block12.rep.5.weight', 'model.block12.rep.5.bias', 'model.block12.rep.5.running_mean', 'model.block12.rep.5.running_var', 'model.block12.rep.5.num_batches_tracked', 'model.conv3.conv1.weight', 'model.conv3.pointwise.weight', 'model.bn3.weight', 'model.bn3.bias', 'model.bn3.running_mean', 'model.bn3.running_var', 'model.bn3.num_batches_tracked', 'model.conv4.conv1.weight', 'model.conv4.pointwise.weight', 'model.bn4.weight', 'model.bn4.bias', 'model.bn4.running_mean', 'model.bn4.running_var', 'model.bn4.num_batches_tracked', 'model.last_linear.1.weight', 'model.last_linear.1.bias'])
+  model.conv1.weight: torch.Size([32, 3, 3, 3])
+  model.bn1.weight: torch.Size([32])
+  model.bn1.bias: torch.Size([32])
+  model.bn1.running_mean: torch.Size([32])
+  model.bn1.running_var: torch.Size([32])
+  model.bn1.num_batches_tracked: torch.Size([])
+  model.conv2.weight: torch.Size([64, 32, 3, 3])
+  model.bn2.weight: torch.Size([64])
+  model.bn2.bias: torch.Size([64])
+  model.bn2.running_mean: torch.Size([64])
+
+--- Inspecting /Users/abhijeetgolhar/Downloads/P Project/Dataset/text_train_model.pkl ---
+Data type: <class 'numpy.ndarray'>
+Shape: (2,)
+First 10 elements: ['FAKE' 'REAL']

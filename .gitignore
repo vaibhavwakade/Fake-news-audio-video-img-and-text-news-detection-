@@ -1,0 +1,34 @@
+# Environment Variables
+.env
+.env.local
+.env.*.local
+
+# Dependencies
+node_modules/
+backend/venv/
+backend/.venv/
+venv/
+.venv/
+__pycache__/
+*.py[cod]
+
+# Datasets & Models (Too large for git)
+backend/Dataset/
+Dataset/
+backend/video_train_model.pth
+backend/audio_train_model.h5
+*.pkl
+*.h5
+*.pth
+
+# IDEs
+.vscode/
+.idea/
+
+# System
+.DS_Store
+Thumbs.db
+
+# Build
+frontend/dist/
+frontend/build/
