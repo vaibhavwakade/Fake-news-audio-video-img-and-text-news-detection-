@@ -19,7 +19,7 @@ import joblib
 load_dotenv()
 
 # Configure Cloud Inference Engine
-api_key = os.getenv("GEMINI_API_KEY")
+api_key = os.getenv("CLOUD_INFERENCE_API_KEY")
 client = ai_engine.Client(api_key=api_key) if api_key else None
 
 # System instruction for balanced and accurate classification

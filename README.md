@@ -52,7 +52,7 @@ pip install -r requirements.txt
 **Environment Variables**:
 Create a `.env` file in `backend/`:
 ```env
-GEMINI_API_KEY=your_secure_api_key_here
+CLOUD_INFERENCE_API_KEY=your_secure_api_key_here
 MONGO_URI=your_mongodb_connection_string
 ```
 
