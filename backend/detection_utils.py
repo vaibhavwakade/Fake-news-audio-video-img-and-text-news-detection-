@@ -578,6 +578,32 @@ Output JSON ONLY:
         fake_prob = self._call_cloud_inference(prompt, text_content)
         return [1 - fake_prob, fake_prob]
 
+    def chat_with_assistant(self, message):
+        """Chat with the GuardianAI Assistant"""
+        if not self.client:
+            return "Error: AI Assistant is offline."
+            
+        try:
+            # Simple chat prompt
+            prompt = f"""You are the GuardianAI Assistant.
+            Your job is to help users understand fake news, deepfakes, and how to verify media.
+            Be helpful, concise, and professional.
+            
+            User: {message}
+            Assistant:"""
+            
+            response = self.client.models.generate_content(
+                model=self.model_name,
+                contents=[ai_types.Content(
+                        role="user",
+                        parts=[ai_types.Part.from_text(text=prompt)]
+                )]
+            )
+            return response.text.strip()
+        except Exception as e:
+            print(f"Chat Error: {e}")
+            return "I'm having trouble connecting right now. Please try again."
+
     def preprocess_audio(self, audio_path):
         try:
             y, sr = librosa.load(audio_path, sr=None)

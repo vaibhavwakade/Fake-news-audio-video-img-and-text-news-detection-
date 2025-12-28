@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Upload, FileText, Image as ImageIcon, Video, Mic, ArrowLeft, TriangleAlert, CircleCheck, Shield } from 'lucide-react';
 import api from '../api';
 import toast from 'react-hot-toast';
+import Chatbot from '../components/Chatbot';
 
 const DetectionLayout = () => {
     const { type } = useParams();
@@ -200,7 +201,9 @@ const DetectionLayout = () => {
                     </div>
                 </div>
             </div>
-        </div>
+
+            <Chatbot />
+        </div >
     );
 };
 
