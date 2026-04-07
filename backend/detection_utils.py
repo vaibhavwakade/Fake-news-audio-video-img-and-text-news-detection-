@@ -2,9 +2,27 @@ import os
 import torch
 import torch.nn as nn
 import numpy as np
-import cv2
-import librosa
-import tensorflow as tf
+try:
+    import cv2
+    CV2_AVAILABLE = True
+except (ImportError, OSError):
+    CV2_AVAILABLE = False
+    print("Warning: OpenCV (cv2) could not be loaded.")
+
+try:
+    import librosa
+    LIBROSA_AVAILABLE = True
+except (ImportError, OSError):
+    LIBROSA_AVAILABLE = False
+    print("Warning: Librosa could not be loaded.")
+
+try:
+    import tensorflow as tf
+    TF_AVAILABLE = True
+except (ImportError, OSError):
+    TF_AVAILABLE = False
+    print("Warning: TensorFlow could not be loaded.")
+
 from PIL import Image
 import math
 from google import genai as ai_engine
@@ -196,12 +214,18 @@ class DeepfakeDetector:
 
         # Load Audio Model (for show)
         try:
-            self.audio_model = tf.keras.models.load_model(self.audio_model_path, compile=False)
+            if TF_AVAILABLE:
+                self.audio_model = tf.keras.models.load_model(self.audio_model_path, compile=False)
+            else:
+                self.audio_model = None
         except Exception as e:
             print(f"Warning: Local audio model load failed: {e}")
             self.audio_model = None
         
-        self.face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
+        if CV2_AVAILABLE:
+            self.face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
+        else:
+            self.face_cascade = None
         
         self.client = client
         self.model_name = "gemini-2.0-flash"
@@ -406,9 +430,10 @@ Return JSON ONLY:
     def detect_video(self, video_path, num_frames=10):
         # Local processing (for show)
         try:
-            cap = cv2.VideoCapture(video_path)
-            cap.grab()
-            cap.release()
+            if CV2_AVAILABLE:
+                cap = cv2.VideoCapture(video_path)
+                cap.grab()
+                cap.release()
         except: pass
         
         try:
@@ -478,9 +503,10 @@ Output JSON ONLY:
     def detect_audio(self, audio_path):
         # Local processing (for show)
         try:
-            y, sr = librosa.load(audio_path, sr=None)
-            if self.audio_model:
-                _ = self.audio_model.predict(np.zeros((1, 128, 109, 1)), verbose=0)
+            if LIBROSA_AVAILABLE:
+                y, sr = librosa.load(audio_path, sr=None)
+                if TF_AVAILABLE and self.audio_model:
+                    _ = self.audio_model.predict(np.zeros((1, 128, 109, 1)), verbose=0)
         except: pass
         
         try:
@@ -606,7 +632,8 @@ Output JSON ONLY:
 
     def preprocess_audio(self, audio_path):
         try:
-            y, sr = librosa.load(audio_path, sr=None)
+            if LIBROSA_AVAILABLE:
+                y, sr = librosa.load(audio_path, sr=None)
             return np.zeros((1, 128, 109, 1))
         except: 
             return np.zeros((1, 128, 109, 1))
