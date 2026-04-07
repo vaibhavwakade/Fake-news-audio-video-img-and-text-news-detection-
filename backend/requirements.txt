@@ -1,0 +1,14 @@
+fastapi
+uvicorn[standard]
+pydantic
+python-dotenv
+pymongo
+bcrypt
+torch
+torchvision
+numpy
+opencv-python
+librosa
+tensorflow
+Pillow
+google-genai
