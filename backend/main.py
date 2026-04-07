@@ -82,15 +82,15 @@ async def login(user: UserLogin):
     return {"message": "Login successful", "username": user.username}
 
 # Prediction Routes
-@app.post("/api/detect/image")
-async def detect_image(file: UploadFile = File(...)):
-    try:
-        contents = await file.read()
-        image = Image.open(io.BytesIO(contents)).convert("RGB")
-        probs = detector.detect_image(image)
-        return {"real_prob": probs[0], "fake_prob": probs[1]}
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+# @app.post("/api/detect/image")
+# async def detect_image(file: UploadFile = File(...)):
+#     try:
+#         contents = await file.read()
+#         image = Image.open(io.BytesIO(contents)).convert("RGB")
+#         probs = detector.detect_image(image)
+#         return {"real_prob": probs[0], "fake_prob": probs[1]}
+#     except Exception as e:
+#         raise HTTPException(status_code=500, detail=str(e))
 
 # @app.post("/api/detect/video")
 # async def detect_video(file: UploadFile = File(...)):
@@ -127,13 +127,13 @@ async def detect_image(file: UploadFile = File(...)):
 #             os.remove(temp_file)
 #         raise HTTPException(status_code=500, detail=str(e))
 
-# @app.post("/api/detect/text")
-# async def detect_text(request: TextRequest):
-#     try:
-#         probs = detector.detect_text(request.text)
-#         return {"real_prob": probs[0], "fake_prob": probs[1]}
-#     except Exception as e:
-#         raise HTTPException(status_code=500, detail=str(e))
+@app.post("/api/detect/text")
+async def detect_text(request: TextRequest):
+    try:
+        probs = detector.detect_text(request.text)
+        return {"real_prob": probs[0], "fake_prob": probs[1]}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 @app.post("/chat")
 async def chat(request: ChatRequest):

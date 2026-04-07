@@ -16,10 +16,10 @@ const DetectionLayout = () => {
     const [preview, setPreview] = useState(null);
 
     const config = {
-        image: { icon: <ImageIcon className="w-6 h-6" />, title: 'Image Analysis', accept: 'image/*', endpoint: '/detect/image' },
+        // image: { icon: <ImageIcon className="w-6 h-6" />, title: 'Image Analysis', accept: 'image/*', endpoint: '/detect/image' },
         // video: { icon: <Video className="w-6 h-6" />, title: 'Video Analysis', accept: 'video/*', endpoint: '/detect/video' },
         // audio: { icon: <Mic className="w-6 h-6" />, title: 'Audio Analysis', accept: 'audio/*', endpoint: '/detect/audio' },
-        // text: { icon: <FileText className="w-6 h-6" />, title: 'Text Analysis', accept: null, endpoint: '/detect/text' },
+        text: { icon: <FileText className="w-6 h-6" />, title: 'Text Analysis', accept: null, endpoint: '/detect/text' },
     };
 
     const currentConfig = config[type];

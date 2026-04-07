@@ -5,15 +5,15 @@ import { Image as ImageIcon, Video, Mic, FileText, ArrowRight } from 'lucide-rea
 
 const Dashboard = () => {
     const options = [
-        {
-            id: 'image',
-            title: 'Image Analysis',
-            desc: 'Detect AI-generated images and deepfakes using visual artifact analysis.',
-            icon: <ImageIcon className="w-8 h-8" />,
-            color: 'bg-blue-500',
-            gradient: 'from-blue-500 to-cyan-500',
-            path: '/detect/image'
-        },
+        // {
+        //     id: 'image',
+        //     title: 'Image Analysis',
+        //     desc: 'Detect AI-generated images and deepfakes using visual artifact analysis.',
+        //     icon: <ImageIcon className="w-8 h-8" />,
+        //     color: 'bg-blue-500',
+        //     gradient: 'from-blue-500 to-cyan-500',
+        //     path: '/detect/image'
+        // },
         // {
         //     id: 'video',
         //     title: 'Video Analysis',
@@ -32,15 +32,15 @@ const Dashboard = () => {
         //     gradient: 'from-rose-500 to-pink-500',
         //     path: '/detect/audio'
         // },
-        // {
-        //     id: 'text',
-        //     title: 'Text Analysis',
-        //     desc: 'Detect machine-generated text and potential misinformation.',
-        //     icon: <FileText className="w-8 h-8" />,
-        //     color: 'bg-emerald-500',
-        //     gradient: 'from-emerald-500 to-teal-500',
-        //     path: '/detect/text'
-        // }
+        {
+            id: 'text',
+            title: 'Text Analysis',
+            desc: 'Detect machine-generated text and potential misinformation.',
+            icon: <FileText className="w-8 h-8" />,
+            color: 'bg-emerald-500',
+            gradient: 'from-emerald-500 to-teal-500',
+            path: '/detect/text'
+        }
     ];
 
     return (

@@ -289,10 +289,10 @@ if st.session_state.page == 'landing':
     
     st.markdown("""
     <div class="landing-features">
-        <div class="landing-feature">
+        <!-- <div class="landing-feature">
             <div class="landing-feature-icon">🖼️</div>
             <div class="landing-feature-text">Image Detection</div>
-        </div>
+        </div> -->
         <!-- <div class="landing-feature">
             <div class="landing-feature-icon">🎥</div>
             <div class="landing-feature-text">Video Analysis</div>
@@ -301,10 +301,10 @@ if st.session_state.page == 'landing':
             <div class="landing-feature-icon">🎵</div>
             <div class="landing-feature-text">Audio Verification</div>
         </div> -->
-        <!-- <div class="landing-feature">
+        <div class="landing-feature">
             <div class="landing-feature-icon">📝</div>
             <div class="landing-feature-text">Text Analysis</div>
-        </div> -->
+        </div>
     </div>
     """, unsafe_allow_html=True)
 
@@ -322,7 +322,7 @@ else:
         
         nav = st.radio(
             "Navigation",
-            ["🏠 Dashboard", "🖼️ Image"],
+            ["🏠 Dashboard", "📝 Text"],
             label_visibility="collapsed"
         )
         
@@ -345,14 +345,14 @@ else:
         
         col1, col2, col3, col4 = st.columns(4)
         
-        with col1:
-            st.markdown("""
-            <div class="analysis-card">
-                <div class="card-icon">🖼️</div>
-                <div class="card-title">Image Analysis</div>
-                <div class="card-desc">Detect AI-generated images and manipulated photos</div>
-            </div>
-            """, unsafe_allow_html=True)
+        # with col1:
+        #     st.markdown("""
+        #     <div class="analysis-card">
+        #         <div class="card-icon">🖼️</div>
+        #         <div class="card-title">Image Analysis</div>
+        #         <div class="card-desc">Detect AI-generated images and manipulated photos</div>
+        #     </div>
+        #     """, unsafe_allow_html=True)
         
         # with col2:
         #     st.markdown("""
@@ -372,14 +372,14 @@ else:
         #     </div>
         #     """, unsafe_allow_html=True)
         
-        # with col4:
-        #     st.markdown("""
-        #     <div class="analysis-card">
-        #         <div class="card-icon">📝</div>
-        #         <div class="card-title">Text Analysis</div>
-        #         <div class="card-desc">Identify misinformation and AI-generated text</div>
-        #     </div>
-        #     """, unsafe_allow_html=True)
+        with col4:
+            st.markdown("""
+            <div class="analysis-card">
+                <div class="card-icon">📝</div>
+                <div class="card-title">Text Analysis</div>
+                <div class="card-desc">Identify misinformation and AI-generated text</div>
+            </div>
+            """, unsafe_allow_html=True)
         
         st.markdown("<br><br>", unsafe_allow_html=True)
         
