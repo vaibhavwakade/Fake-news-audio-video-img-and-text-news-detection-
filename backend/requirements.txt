@@ -12,3 +12,4 @@ librosa
 tensorflow
 Pillow
 google-genai
+python-multipart
