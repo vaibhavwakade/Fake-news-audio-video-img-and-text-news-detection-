@@ -31,8 +31,14 @@ except (ImportError, OSError):
 
 from PIL import Image
 import math
-from google import genai as ai_engine
-from google.genai import types as ai_types
+try:
+    from google import genai as ai_engine
+    from google.genai import types as ai_types
+    GOOGLE_GENAI_AVAILABLE = True
+except (ImportError, OSError):
+    GOOGLE_GENAI_AVAILABLE = False
+    print("Warning: google-genai could not be loaded. Cloud analysis will be disabled.")
+
 from dotenv import load_dotenv
 import time
 import json
