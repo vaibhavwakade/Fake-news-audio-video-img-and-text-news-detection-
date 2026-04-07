@@ -92,40 +92,40 @@ async def detect_image(file: UploadFile = File(...)):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-@app.post("/api/detect/video")
-async def detect_video(file: UploadFile = File(...)):
-    try:
-        temp_file = f"temp_{file.filename}"
-        with open(temp_file, "wb") as buffer:
-            shutil.copyfileobj(file.file, buffer)
-        
-        probs = detector.detect_video(temp_file)
-        os.remove(temp_file)
-        
-        if probs is None:
-             raise HTTPException(status_code=500, detail="Video analysis failed")
+# @app.post("/api/detect/video")
+# async def detect_video(file: UploadFile = File(...)):
+#     try:
+#         temp_file = f"temp_{file.filename}"
+#         with open(temp_file, "wb") as buffer:
+#             shutil.copyfileobj(file.file, buffer)
+#         
+#         probs = detector.detect_video(temp_file)
+#         os.remove(temp_file)
+#         
+#         if probs is None:
+#              raise HTTPException(status_code=500, detail="Video analysis failed")
+# 
+#         return {"real_prob": probs[0], "fake_prob": probs[1]}
+#     except Exception as e:
+#         if os.path.exists(temp_file):
+#             os.remove(temp_file)
+#         raise HTTPException(status_code=500, detail=str(e))
 
-        return {"real_prob": probs[0], "fake_prob": probs[1]}
-    except Exception as e:
-        if os.path.exists(temp_file):
-            os.remove(temp_file)
-        raise HTTPException(status_code=500, detail=str(e))
-
-@app.post("/api/detect/audio")
-async def detect_audio(file: UploadFile = File(...)):
-    try:
-        temp_file = f"temp_{file.filename}"
-        with open(temp_file, "wb") as buffer:
-            shutil.copyfileobj(file.file, buffer)
-        
-        probs = detector.detect_audio(temp_file)
-        os.remove(temp_file)
-        
-        return {"real_prob": probs[0], "fake_prob": probs[1]}
-    except Exception as e:
-        if os.path.exists(temp_file):
-            os.remove(temp_file)
-        raise HTTPException(status_code=500, detail=str(e))
+# @app.post("/api/detect/audio")
+# async def detect_audio(file: UploadFile = File(...)):
+#     try:
+#         temp_file = f"temp_{file.filename}"
+#         with open(temp_file, "wb") as buffer:
+#             shutil.copyfileobj(file.file, buffer)
+#         
+#         probs = detector.detect_audio(temp_file)
+#         os.remove(temp_file)
+#         
+#         return {"real_prob": probs[0], "fake_prob": probs[1]}
+#     except Exception as e:
+#         if os.path.exists(temp_file):
+#             os.remove(temp_file)
+#         raise HTTPException(status_code=500, detail=str(e))
 
 @app.post("/api/detect/text")
 async def detect_text(request: TextRequest):
