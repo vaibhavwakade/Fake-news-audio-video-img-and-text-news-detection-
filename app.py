@@ -293,14 +293,14 @@ if st.session_state.page == 'landing':
             <div class="landing-feature-icon">🖼️</div>
             <div class="landing-feature-text">Image Detection</div>
         </div>
-        <div class="landing-feature">
+        <!-- <div class="landing-feature">
             <div class="landing-feature-icon">🎥</div>
             <div class="landing-feature-text">Video Analysis</div>
         </div>
         <div class="landing-feature">
             <div class="landing-feature-icon">🎵</div>
             <div class="landing-feature-text">Audio Verification</div>
-        </div>
+        </div> -->
         <div class="landing-feature">
             <div class="landing-feature-icon">📝</div>
             <div class="landing-feature-text">Text Analysis</div>
@@ -322,7 +322,7 @@ else:
         
         nav = st.radio(
             "Navigation",
-            ["🏠 Dashboard", "🖼️ Image", "🎥 Video", "🎵 Audio", "📝 Text"],
+            ["🏠 Dashboard", "🖼️ Image", "📝 Text"],
             label_visibility="collapsed"
         )
         
@@ -354,23 +354,23 @@ else:
             </div>
             """, unsafe_allow_html=True)
         
-        with col2:
-            st.markdown("""
-            <div class="analysis-card">
-                <div class="card-icon">🎥</div>
-                <div class="card-title">Video Analysis</div>
-                <div class="card-desc">Identify deepfake videos and fake news footage</div>
-            </div>
-            """, unsafe_allow_html=True)
-        
-        with col3:
-            st.markdown("""
-            <div class="analysis-card">
-                <div class="card-icon">🎵</div>
-                <div class="card-title">Audio Analysis</div>
-                <div class="card-desc">Detect synthetic voices and audio fake news</div>
-            </div>
-            """, unsafe_allow_html=True)
+        # with col2:
+        #     st.markdown("""
+        #     <div class="analysis-card">
+        #         <div class="card-icon">🎥</div>
+        #         <div class="card-title">Video Analysis</div>
+        #         <div class="card-desc">Identify deepfake videos and fake news footage</div>
+        #     </div>
+        #     """, unsafe_allow_html=True)
+        # 
+        # with col3:
+        #     st.markdown("""
+        #     <div class="analysis-card">
+        #         <div class="card-icon">🎵</div>
+        #         <div class="card-title">Audio Analysis</div>
+        #         <div class="card-desc">Detect synthetic voices and audio fake news</div>
+        #     </div>
+        #     """, unsafe_allow_html=True)
         
         with col4:
             st.markdown("""
