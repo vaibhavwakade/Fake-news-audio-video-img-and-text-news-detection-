@@ -127,13 +127,13 @@ async def detect_image(file: UploadFile = File(...)):
 #             os.remove(temp_file)
 #         raise HTTPException(status_code=500, detail=str(e))
 
-@app.post("/api/detect/text")
-async def detect_text(request: TextRequest):
-    try:
-        probs = detector.detect_text(request.text)
-        return {"real_prob": probs[0], "fake_prob": probs[1]}
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+# @app.post("/api/detect/text")
+# async def detect_text(request: TextRequest):
+#     try:
+#         probs = detector.detect_text(request.text)
+#         return {"real_prob": probs[0], "fake_prob": probs[1]}
+#     except Exception as e:
+#         raise HTTPException(status_code=500, detail=str(e))
 
 @app.post("/chat")
 async def chat(request: ChatRequest):

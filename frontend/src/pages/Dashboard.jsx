@@ -32,15 +32,15 @@ const Dashboard = () => {
         //     gradient: 'from-rose-500 to-pink-500',
         //     path: '/detect/audio'
         // },
-        {
-            id: 'text',
-            title: 'Text Analysis',
-            desc: 'Detect machine-generated text and potential misinformation.',
-            icon: <FileText className="w-8 h-8" />,
-            color: 'bg-emerald-500',
-            gradient: 'from-emerald-500 to-teal-500',
-            path: '/detect/text'
-        }
+        // {
+        //     id: 'text',
+        //     title: 'Text Analysis',
+        //     desc: 'Detect machine-generated text and potential misinformation.',
+        //     icon: <FileText className="w-8 h-8" />,
+        //     color: 'bg-emerald-500',
+        //     gradient: 'from-emerald-500 to-teal-500',
+        //     path: '/detect/text'
+        // }
     ];
 
     return (
