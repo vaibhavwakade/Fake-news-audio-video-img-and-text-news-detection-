@@ -14,24 +14,24 @@ const Dashboard = () => {
             gradient: 'from-blue-500 to-cyan-500',
             path: '/detect/image'
         },
-        {
-            id: 'video',
-            title: 'Video Analysis',
-            desc: 'Analyze video footage for face manipulation and synthetic generation.',
-            icon: <Video className="w-8 h-8" />,
-            color: 'bg-indigo-500',
-            gradient: 'from-indigo-500 to-purple-500',
-            path: '/detect/video'
-        },
-        {
-            id: 'audio',
-            title: 'Audio Analysis',
-            desc: 'Identify synthetic voices and AI-generated audio clips.',
-            icon: <Mic className="w-8 h-8" />,
-            color: 'bg-rose-500',
-            gradient: 'from-rose-500 to-pink-500',
-            path: '/detect/audio'
-        },
+        // {
+        //     id: 'video',
+        //     title: 'Video Analysis',
+        //     desc: 'Analyze video footage for face manipulation and synthetic generation.',
+        //     icon: <Video className="w-8 h-8" />,
+        //     color: 'bg-indigo-500',
+        //     gradient: 'from-indigo-500 to-purple-500',
+        //     path: '/detect/video'
+        // },
+        // {
+        //     id: 'audio',
+        //     title: 'Audio Analysis',
+        //     desc: 'Identify synthetic voices and AI-generated audio clips.',
+        //     icon: <Mic className="w-8 h-8" />,
+        //     color: 'bg-rose-500',
+        //     gradient: 'from-rose-500 to-pink-500',
+        //     path: '/detect/audio'
+        // },
         {
             id: 'text',
             title: 'Text Analysis',
