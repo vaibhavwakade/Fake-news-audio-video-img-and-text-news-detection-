@@ -191,8 +191,10 @@ if TORCH_AVAILABLE:
 
 else:
     # Dummy classes for when torch is missing
-    class SeparableConv2d: pass
-    class Block: pass
+    class SeparableConv2d:
+        def __init__(self, *args, **kwargs): pass
+    class Block:
+        def __init__(self, *args, **kwargs): pass
     class Xception:
         def __init__(self, *args, **kwargs): pass
         def __call__(self, *args, **kwargs): pass
