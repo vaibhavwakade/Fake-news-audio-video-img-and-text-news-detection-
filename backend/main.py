@@ -53,6 +53,9 @@ class UserRegister(BaseModel):
 class TextRequest(BaseModel):
     text: str
 
+class ChatRequest(BaseModel):
+    message: str
+
 # Auth Routes
 @app.post("/api/auth/register")
 async def register(user: UserRegister):
@@ -129,6 +132,14 @@ async def detect_text(request: TextRequest):
     try:
         probs = detector.detect_text(request.text)
         return {"real_prob": probs[0], "fake_prob": probs[1]}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/chat")
+async def chat(request: ChatRequest):
+    try:
+        response = detector.chat_with_assistant(request.message)
+        return {"response": response}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 

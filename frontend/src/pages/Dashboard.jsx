@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Image as ImageIcon, Video, Mic, FileText, ArrowRight } from 'lucide-react';
+import { Image as ImageIcon, Video, FileText, ArrowRight } from 'lucide-react';
 
 const Dashboard = () => {
     const options = [
@@ -24,15 +24,6 @@ const Dashboard = () => {
             path: '/detect/video'
         },
         {
-            id: 'audio',
-            title: 'Audio Analysis',
-            desc: 'Identify synthetic voices and AI-generated audio clips.',
-            icon: <Mic className="w-8 h-8" />,
-            color: 'bg-rose-500',
-            gradient: 'from-rose-500 to-pink-500',
-            path: '/detect/audio'
-        },
-        {
             id: 'text',
             title: 'Text Analysis',
             desc: 'Detect machine-generated text and potential misinformation.',
@@ -51,7 +42,7 @@ const Dashboard = () => {
                     <p className="mt-2 text-gray-600">Select an analysis tool to get started</p>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     {options.map((option, idx) => (
                         <Link key={option.id} to={option.path}>
                             <motion.div

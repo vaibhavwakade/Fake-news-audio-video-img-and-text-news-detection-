@@ -15,12 +15,23 @@ import json
 import re
 import io
 import joblib
+import base64
+from groq import Groq
+import builtins
+def print(*args, **kwargs):
+    kwargs.setdefault('flush', True)
+    builtins.print(*args, **kwargs)
 
 load_dotenv()
 
 # Configure Cloud Inference Engine
 api_key = os.getenv("CLOUD_INFERENCE_API_KEY")
 client = ai_engine.Client(api_key=api_key) if api_key else None
+
+# Configure Groq Inference Engine
+groq_api_key = os.getenv("GROQ_API_KEY")
+groq_client = Groq(api_key=groq_api_key) if groq_api_key else None
+
 
 # System instruction for balanced and accurate classification
 # System instruction for strict detection
@@ -204,7 +215,7 @@ class DeepfakeDetector:
         self.face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
         
         self.client = client
-        self.model_name = "gemini-2.0-flash"
+        self.model_name = "gemini-2.5-flash-lite"
 
         # Load Local Text Model
         self.text_model_path = os.path.join(dataset_dir, "../backend/fake_news_model.pkl") 
@@ -231,14 +242,19 @@ class DeepfakeDetector:
         return image
 
     def _parse_inference_response(self, text):
-        """Parse  response to extract fake probability"""
+        """Parse response to extract fake probability"""
         text = text.strip().lower()
-        print(f"--- Model Response ---\\n{text}\\n-----------------------")
+        print(f"--- Model Response ---\n{text}\n-----------------------")
         
-        # Try JSON parsing first
+        # 1. Try robust JSON extraction
         try:
-            # Clean markdown code blocks if present
-            clean_text = text.replace("```json", "").replace("```", "").strip()
+            # Find JSON block using regex
+            json_match = re.search(r'\{.*\}', text, re.DOTALL)
+            if json_match:
+                clean_text = json_match.group(0)
+            else:
+                clean_text = text.replace("```json", "").replace("```", "").strip()
+                
             data = json.loads(clean_text)
             if "fake_probability" in data:
                 return float(data["fake_probability"])
@@ -253,27 +269,23 @@ class DeepfakeDetector:
         except:
             pass
         
-        # Look for FINAL VERDICT format (most reliable)
+        # 2. Look for FINAL VERDICT format (most reliable)
         if "final verdict: fake" in text:
             return 0.9
         if "final verdict: real" in text:
             return 0.1
         
-        # Look for explicit FAKE/REAL keywords at start or end
-        lines = text.strip().split('\\n')
-        first_line = lines[0].strip() if lines else ""
-        last_line = lines[-1].strip() if lines else ""
+        # 3. Whole-word keyword matching
+        has_fake = bool(re.search(r'\bfake\b', text))
+        has_real = bool(re.search(r'\breal\b', text))
         
-        if first_line == "fake" or last_line == "fake":
-            return 0.85
-        if first_line == "real" or last_line == "real":
-            return 0.15
+        # Check negations
+        has_not_fake = bool(re.search(r'\b(not|isn\'t|is not)\s+fake\b', text))
+        has_not_real = bool(re.search(r'\b(not|isn\'t|is not)\s+real\b', text))
         
-        # General keyword search
-        if "fake" in text and "not fake" not in text and "isn't fake" not in text:
+        if has_fake and not has_not_fake:
             return 0.75
-        
-        if "real" in text and "not real" not in text:
+        if has_real and not has_not_real:
             return 0.25
         
         return 0.5
@@ -294,44 +306,87 @@ class DeepfakeDetector:
         return parts
 
     def _call_cloud_inference(self, prompt, content):
-        """Call Cloud Engine with system instruction for accurate detection"""
-        if not self.client:
-            print("ERROR: Inference client not initialized")
-            return 0.5
-            
-        try:
-            response = self.client.models.generate_content(
-                model=self.model_name,
-                contents=[
-                    ai_types.Content(
-                        role="user",
-                        parts=[ai_types.Part.from_text(text=SYSTEM_INSTRUCTION)]
-                    ),
-                    ai_types.Content(
-                        role="model", 
-                        parts=[ai_types.Part.from_text(text="I understand. I will be a critical fact-checker and deepfake detector, erring on the side of caution when classifying content as REAL or FAKE.")]
-                    ),
-                    ai_types.Content(
-                        role="user",
-                        parts=self._prepare_content_parts(prompt, content)
+        """Call Cloud Engine with system instruction for accurate detection, falling back to Groq if needed"""
+        # Try Gemini first if client is initialized
+        if self.client:
+            try:
+                response = self.client.models.generate_content(
+                    model=self.model_name,
+                    contents=[
+                        ai_types.Content(
+                            role="user",
+                            parts=[ai_types.Part.from_text(text=SYSTEM_INSTRUCTION)]
+                        ),
+                        ai_types.Content(
+                            role="model", 
+                            parts=[ai_types.Part.from_text(text="I understand. I will be a critical fact-checker and deepfake detector, erring on the side of caution when classifying content as REAL or FAKE.")]
+                        ),
+                        ai_types.Content(
+                            role="user",
+                            parts=self._prepare_content_parts(prompt, content)
+                        )
+                    ],
+                    config=ai_types.GenerateContentConfig(
+                        temperature=0.1,
+                        max_output_tokens=512
                     )
-                ],
-                config=ai_types.GenerateContentConfig(
-                    temperature=0.1,
-                    max_output_tokens=512
                 )
-            )
-            return self._parse_inference_response(response.text)
-        except Exception as e:
-            print(f"Inference Error: {e}")
-            import traceback
-            traceback.print_exc()
-            return 0.5
+                return self._parse_inference_response(response.text)
+            except Exception as e:
+                print(f"Gemini Inference failed: {e}. Trying Groq fallback...")
+        
+        # Groq Fallback / Direct Call
+        if groq_client:
+            try:
+                if isinstance(content, Image.Image):
+                    # Encode PIL Image to base64
+                    buffered = io.BytesIO()
+                    content.save(buffered, format="JPEG")
+                    base64_image = base64.b64encode(buffered.getvalue()).decode('utf-8')
+                    
+                    completion = groq_client.chat.completions.create(
+                        model="llama-3.2-11b-vision-instant",
+                        messages=[
+                            {"role": "system", "content": SYSTEM_INSTRUCTION},
+                            {
+                                "role": "user",
+                                "content": [
+                                    {"type": "text", "text": prompt},
+                                    {
+                                        "type": "image_url",
+                                        "image_url": {
+                                            "url": f"data:image/jpeg;base64,{base64_image}",
+                                        },
+                                    },
+                                ],
+                            }
+                        ],
+                        temperature=0.1,
+                        max_tokens=512
+                    )
+                else:
+                    # Text content
+                    text_str = content if isinstance(content, str) else str(content)
+                    completion = groq_client.chat.completions.create(
+                        model="llama-3.3-70b-versatile",
+                        messages=[
+                            {"role": "system", "content": SYSTEM_INSTRUCTION},
+                            {"role": "user", "content": f"{prompt}\n\nContent to analyze:\n{text_str}"}
+                        ],
+                        temperature=0.1,
+                        max_tokens=512
+                    )
+                return self._parse_inference_response(completion.choices[0].message.content)
+            except Exception as ge:
+                print(f"Groq Inference failed: {ge}")
+        
+        print("ERROR: Neither Gemini nor Groq client succeeded or was initialized")
+        return 0.5
 
     def _call_cloud_inference_with_file(self, prompt, file_uri, mime_type):
         """Call Cloud Engine with uploaded file and system instruction"""
         if not self.client:
-            print("ERROR: Inference client not initialized")
+            print("ERROR: Inference client not initialized for file API call. Falling back to text/image fallback if applicable.")
             return 0.5
             
         try:
@@ -364,7 +419,7 @@ class DeepfakeDetector:
             print(f"Inference File Error: {e}")
             import traceback
             traceback.print_exc()
-            return 0.5
+            raise e
 
     def detect_image(self, image_input):
         # Run local model (for show)
@@ -375,29 +430,26 @@ class DeepfakeDetector:
                 _ = self.video_model(processed)
         except: pass
 
-        prompt = """You are now in AGGRESSIVE AI ART DETECTION MODE.
-IGNORE warnings about being "balanced". Your job is to catch AI Images (Midjourney, DALL-E, Stable Diffusion).
+        prompt = """You are now in AGGRESSIVE AI ART AND WATERMARK DETECTION MODE.
+IGNORE warnings about being "balanced". Your sole job is to catch AI-generated images (Midjourney, DALL-E, Stable Diffusion, Imagen).
 
-STEP 1 - FORENSIC AI INSPECTION:
-Scrutinize specifically for Generative AI artifacts:
-1. VIRTUAL SETS: Does the news studio look "too glossy", 3D rendered, or like a video game?
-2. AI ANCHORS: Do the people look like "perfect" 3D models with wax-like skin?
-3. HANDS/FINGERS: Count them. Are they merged, too many, or deformed?
-4. TEXT/SIGNS: Is background text gibberish, misspelled (e.g. "VOLTASIITY"), or alien symbols?
-5. EYES/TEETH: Are pupils asymmetric? Do teeth look like a single white block?
+STEP 1 - WATERMARK INSPECTION (CRITICAL):
+- Examine the bottom-right corner and other corners carefully for the Google/Gemini four-pointed sparkle/star logo or any digital watermark. 
+- IF you see a four-pointed star/sparkle icon in the bottom-right corner, it is 100% AI-generated. You MUST classify it as FAKE with a probability of 0.99.
 
-STEP 2 - CONTENT ANALYSIS:
-- If it looks like a high-end 3D render of a newsroom -> FAKE.
-- If text on tickers/screens makes no sense or has typos -> FAKE.
-- If it looks like a "perfect" digital illustration but tries to pass as a photo -> FAKE.
-- If it depicts a sensational/impossible event (e.g., Pope in puffer jacket) -> FAKE.
+STEP 2 - FORENSIC AI INSPECTION:
+- Check for hyper-sharp, ultra-glossy, perfectly lit, or heavily airbrushed appearances typical of AI studio sets and AI news anchors.
+- Check the background screen text, scrolling news tickers, or signs. Are there spelling errors, gibberish letters, or distorted/weird characters (e.g., "VOLTASIITY" instead of "VOLATILITY", "MILSTONE" instead of "MILESTONE")?
+- Check reflections on tables or glass surfaces. Are they distorted, backwards, or physically impossible?
+- Check the face and hands of the subject. Do they look like plasticky 3D models with wax-like skin?
 
 STEP 3 - FINAL JSON OUTPUT:
+If you find ANY watermark, hyper-sharpness, spelling errors in the background text, or impossible reflections -> FAKE.
 Return JSON ONLY:
 {
-    "reasoning": "cite specific artifact (e.g. 'deformed output hand 6 fingers')",
-    "fake_probability": 0.xx,
-    "result": "FAKE" or "REAL"
+    "reasoning": "cite specific artifact (e.g., 'Gemini sparkle watermark in bottom-right corner', 'spelling error VOLTASIITY in background')",
+    "fake_probability": 0.99,
+    "result": "FAKE"
 }"""
         
         fake_prob = self._call_cloud_inference(prompt, image_input)
@@ -410,127 +462,205 @@ Return JSON ONLY:
             cap.grab()
             cap.release()
         except: pass
-        
-        try:
-            print("Uploading video for analysis...")
-            video_file = self.client.files.upload(file=video_path)
-            
-            while video_file.state.name == "PROCESSING":
-                print(f"Processing video...")
-                time.sleep(2)
-                video_file = self.client.files.get(name=video_file.name)
-            
-            if video_file.state.name == "FAILED":
-                print("Video processing failed")
-                return None
-            
-            print(f"Video ready: {video_file.uri}")
-            
-            prompt = """Please perform a COMPREHENSIVE ANALYSIS of this video:
-
-STEP 1 - VISUAL ANALYSIS:
-Carefully examine the person(s) in the video:
-- Do they look like REAL humans or AI-GENERATED?
-- Any signs of deepfake: face glitches, unnatural movements, lip-sync issues?
-- Does the video quality suggest it's authentic footage or synthetic?
+        # Try Gemini Video Detection first
+        if self.client:
+            try:
+                print("Uploading video for analysis...")
+                video_file = self.client.files.upload(file=video_path)
+                
+                while video_file.state.name == "PROCESSING":
+                    print(f"Processing video...")
+                    time.sleep(2)
+                    video_file = self.client.files.get(name=video_file.name)
+                
+                if video_file.state.name != "FAILED":
+                    print(f"Video ready: {video_file.uri}")
+                    
+                    prompt = """Please perform a COMPREHENSIVE FORENSIC ANALYSIS of this video:
 
 STEP 1 - VISUAL FORENSICS (CRITICAL):
-1. IGNORE COMPRESSION: Blocky pixels = REAL (usually). 
-   **EXCEPTION:** A compressed video CAN still be FAKE. Do not let low quality hide the following symptoms.
-   
-2. DETECT AI AVATARS (The "News Anchor" Case) - **HIGH PRIORITY**:
-   - **STATIC BODY:** Does the person sit/stand unnaturally still? Do hands never move? -> FAKE.
-   - **LIP FLAPS:** Does the mouth movement look like a simple open/close loop? -> FAKE.
-   - **GENERIC TEMPLATES:** Does the news ticker/background look like a generic "Breaking News" template? -> FAKE.
-   - **PERFECT CLOTHING:** Is the suit/dress weirdly wrinkle-free? -> FAKE.
+1. IGNORE COMPRESSION: Blocky pixels, social media compression, or low bitrate are normal. Do not classify as FAKE based on video quality alone.
+2. DETECT AI AVATARS & DEEPFAKES (e.g., HeyGen, Synthesia, Deepfakes) - HIGH PRIORITY:
+   - **Body Stillness:** Does the speaker's body stand/sit unnaturally still while only their mouth/face moves? Are their hands frozen or non-existent? -> FAKE.
+   - **Lip Sync & Flaps:** Does the mouth movement look like a simple, repetitive open/close texture loop, or does it mismatch the audio phonemes? -> FAKE.
+   - **Blinking:** Is the blinking rate unnaturally low, completely absent, or robotic? -> FAKE.
+   - **Perfect/Wax Skin & Clothing:** Does the person have perfectly airbrushed, plasticky skin with no blemishes, or weirdly wrinkle-free, static clothing? -> FAKE.
+   - **Generative Warping:** Check for sudden facial warping, melting borders, or glitches around the face/hair when they move. -> FAKE.
 
-3. DETECT AI WARPING (Generative): Morphing/Melting = FAKE.
+STEP 2 - STUDIO SET & GRAPHICS:
+- **Generic Graphics:** Does the news set use generic, unbranded templates (e.g., "GNN", "WNN", "WORLD NEWS", or just "LIVE" with no actual TV station logo)? -> FAKE.
+- **Set Depth & Lighting:** Does the background feel like a flat green-screen backdrop with inconsistent lighting/shadows on the anchor? -> FAKE.
+- **Specific Branding:** Real news broadcasts have real, specific logos and network graphics (e.g., CNN, BBC, FOX, MSNBC, local news affiliates). If it looks like professional news but has NO identifiable network branding, classify as FAKE.
 
-STEP 2 - CONTENT & AUDIO:
-- Does the voice sound robotic or monotonal (TTS)?
-- Is the content impossible or hallucinatory?
+STEP 3 - CONTENT & AUDIO VERIFICATION:
+- Does the voice sound robotic, monotone, or generated (TTS)?
+- Are the claims fabricated, sensationalized, or highly implausible?
 
-STEP 3 - FINAL JSON OUTPUT:
-CRITICAL "GENERIC NEWS" TRAP:
-- AI generators use generic "Breaking News" templates. Real news has specific branding (CNN, BBC, FOX, LOCAL TV).
-- IF the output looks like "Professional News" but you cannot name the specific Network -> FAKE.
-- IF it uses generic "GNN", "WNN", "WORLD NEWS", or just "LIVE" graphics -> FAKE.
-- IF the anchor is perfect but the set has no depth (green screen feel) -> FAKE.
+DECISION RULE:
+- If technical artifacts, AI avatar behavior, generic unbranded news graphics, or clear misinformation are present -> FAKE.
+- If the media has natural human imperfections, consistent physics, and verifiable real-world broadcast branding -> REAL.
 
 Output JSON ONLY:
 {
-    "reasoning": "Specify: 'Generic unbranded news template detected' OR 'Verified specific network footage'",
+    "reasoning": "Detailed visual/audio evidence (e.g., 'HeyGen AI avatar detected due to body stillness', 'Generic unbranded news graphics', or 'Verified BBC news clip')",
+    "fake_probability": float (0.0 to 1.0),
+    "result": "FAKE" or "REAL"
+}"""
+                    
+                    fake_prob = self._call_cloud_inference_with_file(prompt, video_file.uri, video_file.mime_type)
+                    self.client.files.delete(name=video_file.name)
+                    return [1 - fake_prob, fake_prob]
+            except Exception as e:
+                print(f"Gemini Video Detection failed: {e}. Trying Groq fallback...")
+                
+        # Groq Fallback (Vision Llama 3.2)
+        if groq_client:
+            try:
+                print("Extracting frame from video for Groq Vision analysis...")
+                cap = cv2.VideoCapture(video_path)
+                success, frame = cap.read()
+                cap.release()
+                
+                if success:
+                    rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+                    pil_img = Image.fromarray(rgb_frame)
+                    
+                    prompt = """Analyze this frame extracted from a video.
+We are checking if this video is an AI-generated Deepfake or Synthetic media.
+Examine the faces, studio set, text, and overall realism.
+
+Output JSON ONLY:
+{
+    "reasoning": "e.g. 'Wax-like skin texture on subject', 'Hyper-sharp unbranded studio'",
     "fake_probability": 0.xx,
     "result": "FAKE" or "REAL"
 }"""
-            
-            fake_prob = self._call_cloud_inference_with_file(prompt, video_file.uri, video_file.mime_type)
-            self.client.files.delete(name=video_file.name)
-            
-            return [1 - fake_prob, fake_prob]
-            
-        except Exception as e:
-            print(f"Video Error: {e}")
-            import traceback
-            traceback.print_exc()
-            return None
+                    fake_prob = self._call_cloud_inference(prompt, pil_img)
+                    return [1 - fake_prob, fake_prob]
+            except Exception as ge:
+                print(f"Groq Video Detection failed: {ge}")
+                
+        return [0.5, 0.5]
 
     def detect_audio(self, audio_path):
-        # Local processing (for show)
-        try:
-            y, sr = librosa.load(audio_path, sr=None)
-            if self.audio_model:
-                _ = self.audio_model.predict(np.zeros((1, 128, 109, 1)), verbose=0)
-        except: pass
+        local_fake_prob = None
+        # 1. Run Local Trained Audio Model on the actual audio characteristics (Mel-Spectrogram)
+        if self.audio_model:
+            try:
+                y, sr = librosa.load(audio_path, sr=None)
+                # Extract Mel-Spectrogram
+                mel_spec = librosa.feature.melspectrogram(y=y, sr=sr, n_mels=128)
+                mel_spec_db = librosa.power_to_db(mel_spec, ref=np.max)
+                # Resize to exactly matching model input: (128, 109)
+                resized_spec = cv2.resize(mel_spec_db, (109, 128))
+                # Normalize
+                resized_spec = (resized_spec - resized_spec.min()) / (resized_spec.max() - resized_spec.min() + 1e-8)
+                model_input = np.expand_dims(resized_spec, axis=(0, -1))
+                
+                # Predict
+                probs = self.audio_model.predict(model_input, verbose=0)[0]
+                local_fake_prob = float(probs[1])
+                print(f"Local Trained Audio Model (Voice Forensics) Fake Probability: {local_fake_prob*100:.1f}%")
+            except Exception as e:
+                print(f"Local Trained Audio Model prediction failed: {e}")
         
-        try:
-            print("Uploading audio for analysis...")
-            audio_file = self.client.files.upload(file=audio_path)
-            
-            while audio_file.state.name == "PROCESSING":
-                print(f"Processing audio...")
-                time.sleep(1)
-                audio_file = self.client.files.get(name=audio_file.name)
-            
-            if audio_file.state.name == "FAILED":
-                print("Audio processing failed")
-                return [0.5, 0.5]
-            
-            print(f"Audio ready: {audio_file.uri}")
-            
-            prompt = """You are now in AGGRESSIVE AUDIO FORENSICS MODE.
-Your goal is to catch AI Voices (ElevenLabs, Murf.ai, Play.ht).
+        # 2. Run Cloud Fact Check / Advanced Analysis
+        cloud_fake_prob = 0.5
+        gemini_success = False
+        
+        # Try Gemini first
+        if self.client:
+            try:
+                print("Uploading audio for analysis...")
+                audio_file = self.client.files.upload(file=audio_path)
+                
+                while audio_file.state.name == "PROCESSING":
+                    print(f"Processing audio...")
+                    time.sleep(1)
+                    audio_file = self.client.files.get(name=audio_file.name)
+                
+                if audio_file.state.name != "FAILED":
+                    print(f"Audio ready: {audio_file.uri}")
+                    
+                    prompt = """You are an expert Audio Forensics Analyst.
+Your task is to analyze this audio file and determine if it is an AUTHENTIC human voice (REAL) or an AI-GENERATED/SYNTHETIC voice (FAKE).
 
-STEP 1 - LISTEN FOR AI ARTIFACTS:
-- BREATHING: Does the speaker take natural breaths? (AI often forgets to breathe). -> No breath = FAKE.
-- PITCH: Is the pitch too perfect or consistently monotonic? -> FAKE.
-- CADENCE: Is the rhythm too regular (robotic)? -> FAKE.
-- GLITCHES: Are there sudden metallic clicks or weird pronunciation? -> FAKE.
+CRITICAL CONTEXT:
+Modern AI voice generators (like ElevenLabs) sound highly realistic, with natural pitch variations, pauses, and even breathing. You must look for subtle engineering and synthetic artifacts to distinguish them.
 
-STEP 2 - CONTENT ANALYSIS:
-- Is it a generic AI script?
+FORENSIC CHECKLIST (Examine carefully):
 
-STEP 3 - FINAL JSON OUTPUT:
-CRITICAL: High quality audio is SUSPICIOUS. Real recordings have background noise/room tone.
-If it sounds "Too Clean" and "Too Perfect" -> FAKE.
+1. BACKGROUND NOISE FLOOR & GATING:
+   - Real recordings (including YouTube news) have a continuous, organic ambient noise floor (room tone, mic hiss, or background environment).
+   - AI-generated audios often have "digital gating": the background noise cuts to absolute 100% digital silence (zero signal) between words or sentences. If you hear a naked voice in a perfect vacuum with completely dead silent pauses, classify as FAKE.
+
+2. VOICE & PHONETIC TRANSITIONS:
+   - Check transitions between words and syllables. AI voices often have unnatural phonetic joins, sudden micro-jumps in pitch, or sharp/metallic clips on hard consonants (p, t, k) and sibilants (s, sh).
+   - Check for repetitive cadence: AI speech often repeats the exact same rising and falling intonation pattern in every sentence.
+
+3. BREATHING & PHYSIOLOGY:
+   - Look for copy-pasted or unnaturally placed breathing sounds. AI models often insert identical-sounding breath sounds at mathematically regular intervals, or have breaths that do not match the speaker's phrasing logic.
+
+4. RECORDING CONTEXT / BROADCAST TRAITS:
+   - Real news audio from YouTube has typical broadcast acoustics: reporter sign-offs (e.g., "This is ... reporting for ..."), room acoustics, field noise, or studio-grade room tone.
+   - AI-generated news audio is usually a dry, sterile voice reading a generic script in a perfect acoustic vacuum.
+
+DECISION RULE:
+- If you detect digital gating (dead silence between words), repetitive cadence, synthetic breathing, or a sterile voice track reading generic script in a vacuum -> Classify as FAKE.
+- If you hear natural continuous background hum/hiss, natural vocal fry, unique and contextual breathing, and real broadcast acoustics -> Classify as REAL.
 
 Output JSON ONLY:
 {
-    "reasoning": "e.g. 'No breathing sounds detected', 'Robotic cadence'",
+    "reasoning": "Detailed forensic explanation citing specific voice cues, gating, room tone, or pacing artifacts",
+    "fake_probability": float (0.0 to 1.0),
+    "result": "FAKE" or "REAL"
+}"""
+                    
+                    cloud_fake_prob = self._call_cloud_inference_with_file(prompt, audio_file.uri, audio_file.mime_type)
+                    self.client.files.delete(name=audio_file.name)
+                    gemini_success = True
+            except Exception as e:
+                print(f"Gemini Audio Detection failed: {e}. Trying Groq fallback...")
+                
+        # Groq Fallback (Whisper API + Llama 3)
+        if not gemini_success and groq_client:
+            try:
+                print("Transcribing audio using Groq Whisper API...")
+                with open(audio_path, "rb") as file:
+                    transcription = groq_client.audio.transcriptions.create(
+                      file=(audio_path, file.read()),
+                      model="whisper-large-v3",
+                      response_format="verbose_json",
+                    )
+                transcription_text = transcription.text
+                print(f"Transcription: {transcription_text}")
+                
+                prompt = """Analyze this audio transcription carefully.
+We are detecting if the claims are REAL or FAKE (misinformation, fake news).
+Based on the text content, fact check and determine if it is authentic.
+
+Output JSON ONLY:
+{
+    "reasoning": "cite specific facts or style details",
     "fake_probability": 0.xx,
     "result": "FAKE" or "REAL"
 }"""
+                cloud_fake_prob = self._call_cloud_inference(prompt, transcription_text)
+            except Exception as ge:
+                print(f"Groq Audio Detection failed: {ge}")
+                
+        # 3. Combine Local Voice Model (Forensics) with Cloud (Fact-Check)
+        if local_fake_prob is not None:
+            # If the local physical voice model is highly confident (> 0.7) that the voice characteristics are AI-generated, it overrides.
+            if local_fake_prob > 0.7:
+                final_fake_prob = max(local_fake_prob, cloud_fake_prob)
+            else:
+                final_fake_prob = (local_fake_prob * 0.4 + cloud_fake_prob * 0.6)
+        else:
+            final_fake_prob = cloud_fake_prob
             
-            fake_prob = self._call_cloud_inference_with_file(prompt, audio_file.uri, audio_file.mime_type)
-            self.client.files.delete(name=audio_file.name)
-            
-            return [1 - fake_prob, fake_prob]
-            
-        except Exception as e:
-            print(f"Audio Error: {e}")
-            import traceback
-            traceback.print_exc()
-            return [0.5, 0.5]
+        print(f"Final Combined Audio Fake Probability: {final_fake_prob*100:.1f}%")
+        return [1 - final_fake_prob, final_fake_prob]
 
     def detect_text(self, text_content):
         # 1. Try Local Model First
@@ -577,6 +707,54 @@ Output JSON ONLY:
         
         fake_prob = self._call_cloud_inference(prompt, text_content)
         return [1 - fake_prob, fake_prob]
+
+    def chat_with_assistant(self, message):
+        """Chat with the GuardianAI Assistant"""
+        # Try Gemini first
+        if self.client:
+            try:
+                # Simple chat prompt
+                prompt = f"""You are the GuardianAI Assistant.
+                Your job is to help users understand fake news, deepfakes, and how to verify media.
+                Be helpful, concise, and professional.
+                
+                User: {message}
+                Assistant:"""
+                
+                response = self.client.models.generate_content(
+                    model=self.model_name,
+                    contents=[ai_types.Content(
+                            role="user",
+                            parts=[ai_types.Part.from_text(text=prompt)]
+                    )]
+                )
+                return response.text.strip()
+            except Exception as e:
+                print(f"Gemini Chat Error: {e}. Trying Groq...")
+                
+        # Groq Fallback
+        if groq_client:
+            try:
+                prompt = f"""You are the GuardianAI Assistant.
+                Your job is to help users understand fake news, deepfakes, and how to verify media.
+                Be helpful, concise, and professional.
+                
+                User: {message}
+                Assistant:"""
+                
+                completion = groq_client.chat.completions.create(
+                    model="llama-3.3-70b-versatile",
+                    messages=[
+                        {"role": "user", "content": prompt}
+                    ],
+                    temperature=0.7,
+                    max_tokens=512
+                )
+                return completion.choices[0].message.content.strip()
+            except Exception as ge:
+                print(f"Groq Chat Error: {ge}")
+                
+        return "Error: AI Assistant is offline."
 
     def preprocess_audio(self, audio_path):
         try:

@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Upload, FileText, Image as ImageIcon, Video, Mic, ArrowLeft, TriangleAlert, CircleCheck, Shield } from 'lucide-react';
+import { Upload, FileText, Image as ImageIcon, Video, ArrowLeft, TriangleAlert, CircleCheck, Shield } from 'lucide-react';
 import api from '../api';
 import toast from 'react-hot-toast';
+import Chatbot from '../components/Chatbot';
 
 const DetectionLayout = () => {
     const { type } = useParams();
@@ -17,7 +18,6 @@ const DetectionLayout = () => {
     const config = {
         image: { icon: <ImageIcon className="w-6 h-6" />, title: 'Image Analysis', accept: 'image/*', endpoint: '/detect/image' },
         video: { icon: <Video className="w-6 h-6" />, title: 'Video Analysis', accept: 'video/*', endpoint: '/detect/video' },
-        audio: { icon: <Mic className="w-6 h-6" />, title: 'Audio Analysis', accept: 'audio/*', endpoint: '/detect/audio' },
         text: { icon: <FileText className="w-6 h-6" />, title: 'Text Analysis', accept: null, endpoint: '/detect/text' },
     };
 
@@ -35,7 +35,7 @@ const DetectionLayout = () => {
                 const reader = new FileReader();
                 reader.onloadend = () => setPreview(reader.result);
                 reader.readAsDataURL(selectedFile);
-            } else if (type === 'video' || type === 'audio') {
+            } else if (type === 'video') {
                 setPreview(URL.createObjectURL(selectedFile));
             }
             setResult(null);
@@ -122,7 +122,7 @@ const DetectionLayout = () => {
                                                 {file ? file.name : 'Click to upload or drag and drop'}
                                             </span>
                                             <span className="text-xs text-gray-500 mt-2">
-                                                {type === 'image' ? 'JPG, PNG, WEBP' : type === 'video' ? 'MP4, MOV' : 'MP3, WAV'}
+                                                {type === 'image' ? 'JPG, PNG, WEBP' : 'MP4, MOV'}
                                             </span>
                                         </label>
                                     </div>
@@ -135,9 +135,7 @@ const DetectionLayout = () => {
                                 {preview && type === 'video' && (
                                     <video src={preview} controls className="w-full h-48 rounded-lg" />
                                 )}
-                                {preview && type === 'audio' && (
-                                    <audio src={preview} controls className="w-full mt-2" />
-                                )}
+
 
                                 <button
                                     onClick={handleAnalyze}
@@ -200,7 +198,9 @@ const DetectionLayout = () => {
                     </div>
                 </div>
             </div>
-        </div>
+
+            <Chatbot />
+        </div >
     );
 };
 

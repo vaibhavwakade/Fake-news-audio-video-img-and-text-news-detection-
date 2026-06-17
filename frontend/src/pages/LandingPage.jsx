@@ -28,7 +28,7 @@ const LandingPage = () => {
                             </span>
                         </h1>
                         <p className="mt-4 max-w-2xl mx-auto text-xl text-gray-600 mb-10">
-                            GuardianAI uses advanced machine learning to analyze images, videos, audio, and text, identifying synthetic manipulation and misinformation in seconds.
+                            GuardianAI uses advanced machine learning to analyze images, videos, and text, identifying synthetic manipulation and misinformation in seconds.
                         </p>
                         <div className="flex justify-center gap-4">
                             <Link
@@ -56,7 +56,7 @@ const LandingPage = () => {
                             {
                                 icon: <Shield className="w-8 h-8 text-blue-600" />,
                                 title: "Multi-Modal Analysis",
-                                desc: "Analyze Images, Videos, Audio, and Text with our specialized models trained on millions of samples."
+                                desc: "Analyze Images, Videos, and Text with our specialized models trained on millions of samples."
                             },
                             {
                                 icon: <Globe className="w-8 h-8 text-indigo-600" />,

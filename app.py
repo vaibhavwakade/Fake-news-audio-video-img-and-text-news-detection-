@@ -298,10 +298,6 @@ if st.session_state.page == 'landing':
             <div class="landing-feature-text">Video Analysis</div>
         </div>
         <div class="landing-feature">
-            <div class="landing-feature-icon">🎵</div>
-            <div class="landing-feature-text">Audio Verification</div>
-        </div>
-        <div class="landing-feature">
             <div class="landing-feature-icon">📝</div>
             <div class="landing-feature-text">Text Analysis</div>
         </div>
@@ -322,7 +318,7 @@ else:
         
         nav = st.radio(
             "Navigation",
-            ["🏠 Dashboard", "🖼️ Image", "🎥 Video", "🎵 Audio", "📝 Text"],
+            ["🏠 Dashboard", "🖼️ Image", "🎥 Video", "📝 Text"],
             label_visibility="collapsed"
         )
         
@@ -343,7 +339,7 @@ else:
         </div>
         """, unsafe_allow_html=True)
         
-        col1, col2, col3, col4 = st.columns(4)
+        col1, col2, col3 = st.columns(3)
         
         with col1:
             st.markdown("""
@@ -366,15 +362,6 @@ else:
         with col3:
             st.markdown("""
             <div class="analysis-card">
-                <div class="card-icon">🎵</div>
-                <div class="card-title">Audio Analysis</div>
-                <div class="card-desc">Detect synthetic voices and audio fake news</div>
-            </div>
-            """, unsafe_allow_html=True)
-        
-        with col4:
-            st.markdown("""
-            <div class="analysis-card">
                 <div class="card-icon">📝</div>
                 <div class="card-title">Text Analysis</div>
                 <div class="card-desc">Identify misinformation and AI-generated text</div>
@@ -387,7 +374,7 @@ else:
         c1, c2, c3, c4 = st.columns(4)
         c1.metric("Accuracy", "98.2%")
         c2.metric("Analysis Time", "< 5s")
-        c3.metric("Media Types", "4")
+        c3.metric("Media Types", "3")
         c4.metric("AI Engine", "ML")
     
     # Image Analysis

@@ -56,6 +56,11 @@ CLOUD_INFERENCE_API_KEY=your_secure_api_key_here
 MONGO_URI=your_mongodb_connection_string
 ```
 
+**Run Backend Server**:
+```bash
+python main.py
+```
+
 ### 3. Frontend Setup
 ```bash
 cd ../frontend
