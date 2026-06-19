@@ -12,14 +12,14 @@ venv/
 __pycache__/
 *.py[cod]
 
-# Datasets & Models (Too large for git)
-backend/Dataset/
-Dataset/
-backend/video_train_model.pth
-backend/audio_train_model.h5
-*.pkl
-*.h5
-*.pth
+# Datasets & Models (Managed by Git LFS)
+# backend/Dataset/
+# Dataset/
+# backend/video_train_model.pth
+# backend/audio_train_model.h5
+# *.pkl
+# *.h5
+# *.pth
 
 # IDEs
 .vscode/
